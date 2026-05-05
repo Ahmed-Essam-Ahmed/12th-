@@ -6,67 +6,76 @@ import { formatCurrency } from '../utils/formatters'
 import { getTotalIncome, getTotalExpenses, getBalance } from '../utils/calculations'
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth()
-  const { transactions }  = useData()
+  const { user, logout }  = useAuth()
+  const { transactions }   = useData()
   const navigate = useNavigate()
 
   const handleLogout = () => { logout(); navigate('/login') }
 
+  const stats = [
+    { label: 'Total Income',   value: formatCurrency(getTotalIncome(transactions)),  color: 'var(--mz-success)' },
+    { label: 'Total Expenses', value: formatCurrency(getTotalExpenses(transactions)), color: 'var(--mz-danger)'  },
+    { label: 'Balance',        value: formatCurrency(getBalance(transactions)),       color: 'var(--mz-primary)' },
+    { label: 'Transactions',   value: transactions.length,                            color: 'var(--mz-muted)'   },
+  ]
+
   return (
     <Container>
-      <h4 className="mb-4">Profile</h4>
-      <Row>
+      <div className="page-header">
+        <h4>Profile</h4>
+      </div>
+
+      <Row className="g-4">
+        {/* Avatar card */}
         <Col md={4}>
-          <Card className="text-center mb-4">
-            <Card.Body className="py-5">
-              <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center
-                justify-content-center mb-3" style={{ width: 80, height: 80, fontSize: 32 }}>
+          <Card className="text-center h-100">
+            <Card.Body className="d-flex flex-column align-items-center justify-content-center gap-3">
+              <div
+                className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                style={{ width: 80, height: 80, fontSize: 32, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
+              >
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <h5 className="fw-bold">{user.name}</h5>
-              <p className="text-muted">{user.email}</p>
-              <Button variant="outline-danger" className="w-100" onClick={handleLogout}>
-                <i className="bi bi-box-arrow-right me-1" />Logout
+              <div>
+                <h5 className="mb-1">{user.name}</h5>
+                <p className="mb-0 small" style={{ color: 'var(--mz-muted)' }}>{user.email}</p>
+              </div>
+              <Button variant="outline-danger" className="w-100 mt-2" onClick={handleLogout}>
+                <i className="bi bi-box-arrow-right me-1" /> Logout
               </Button>
             </Card.Body>
           </Card>
         </Col>
+
+        {/* Stats + info */}
         <Col md={8}>
-          <Card className="mb-3">
-            <Card.Header><strong>Account Summary</strong></Card.Header>
-            <Card.Body>
-              <Row className="text-center g-3">
-                <Col>
-                  <div className="text-success fw-bold fs-5">{formatCurrency(getTotalIncome(transactions))}</div>
-                  <small className="text-muted">Total Income</small>
-                </Col>
-                <Col>
-                  <div className="text-danger fw-bold fs-5">{formatCurrency(getTotalExpenses(transactions))}</div>
-                  <small className="text-muted">Total Expenses</small>
-                </Col>
-                <Col>
-                  <div className={`fw-bold fs-5 ${getBalance(transactions) >= 0 ? 'text-primary' : 'text-danger'}`}>
-                    {formatCurrency(getBalance(transactions))}
-                  </div>
-                  <small className="text-muted">Balance</small>
-                </Col>
-                <Col>
-                  <div className="fw-bold fs-5">{transactions.length}</div>
-                  <small className="text-muted">Transactions</small>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
+          {/* Summary stats */}
+          <Row className="g-3 mb-4">
+            {stats.map(({ label, value, color }) => (
+              <Col xs={6} key={label}>
+                <Card>
+                  <Card.Body>
+                    <p className="mb-1 small" style={{ color: 'var(--mz-muted)', fontWeight: 500 }}>{label}</p>
+                    <h5 className="mb-0 fw-bold" style={{ color }}>{value}</h5>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {/* Account info */}
           <Card>
-            <Card.Header><strong>Account Info</strong></Card.Header>
+            <Card.Header>Account Info</Card.Header>
             <Card.Body>
-              <dl className="row mb-0">
-                <dt className="col-sm-3 text-muted">Name</dt>
-                <dd className="col-sm-9">{user.name}</dd>
-                <dt className="col-sm-3 text-muted">Email</dt>
-                <dd className="col-sm-9">{user.email}</dd>
-                <dt className="col-sm-3 text-muted">Member since</dt>
-                <dd className="col-sm-9">{new Date(user.createdAt).toLocaleDateString()}</dd>
+              <dl className="row mb-0" style={{ rowGap: '0.75rem' }}>
+                <dt className="col-sm-4" style={{ color: 'var(--mz-muted)', fontWeight: 500 }}>Full Name</dt>
+                <dd className="col-sm-8 mb-0">{user.name}</dd>
+
+                <dt className="col-sm-4" style={{ color: 'var(--mz-muted)', fontWeight: 500 }}>Email</dt>
+                <dd className="col-sm-8 mb-0">{user.email}</dd>
+
+                <dt className="col-sm-4" style={{ color: 'var(--mz-muted)', fontWeight: 500 }}>Member since</dt>
+                <dd className="col-sm-8 mb-0">{new Date(user.createdAt).toLocaleDateString()}</dd>
               </dl>
             </Card.Body>
           </Card>

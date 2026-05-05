@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap'
 import { useData } from '../../hooks/useData'
 
+const today = new Date().toISOString().split('T')[0]
+
 const empty = {
   type: 'expense', amount: '', categoryId: '',
-  description: '', date: new Date().toISOString().split('T')[0],
+  description: '', date: today,
 }
 
 export default function TransactionForm({ show, onHide, transaction = null }) {
@@ -58,7 +60,14 @@ export default function TransactionForm({ show, onHide, transaction = null }) {
             <Col>
               <Form.Group className="mb-3">
                 <Form.Label>Date</Form.Label>
-                <Form.Control type="date" name="date" value={form.date} onChange={handle} required />
+                <Form.Control
+                  type="date"
+                  name="date"
+                  value={form.date}
+                  onChange={handle}
+                  max={today}
+                  required
+                />
               </Form.Group>
             </Col>
           </Row>
@@ -70,7 +79,9 @@ export default function TransactionForm({ show, onHide, transaction = null }) {
             </Form.Select>
           </Form.Group>
           <Form.Group>
-            <Form.Label>Description <span className="text-muted small">(optional)</span></Form.Label>
+            <Form.Label>
+              Description <span className="small" style={{ color: 'var(--mz-muted)' }}>(optional)</span>
+            </Form.Label>
             <Form.Control type="text" name="description" placeholder="e.g. Monthly groceries"
               value={form.description} onChange={handle} />
           </Form.Group>

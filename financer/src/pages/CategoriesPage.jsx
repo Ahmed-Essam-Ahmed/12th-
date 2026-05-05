@@ -17,27 +17,46 @@ export default function CategoriesPage() {
 
   return (
     <Container>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="mb-0">Categories</h4>
+      {/* Page header */}
+      <div className="page-header">
+        <h4>Categories</h4>
         <Button variant="primary" onClick={() => setShowForm(true)}>
-          <i className="bi bi-plus-lg me-1" />Add Category
+          <i className="bi bi-plus-lg me-1" /> Add Category
         </Button>
       </div>
+
+      {/* Tabs */}
       <Nav variant="tabs" className="mb-4">
-        {['expense','income'].map((t) => (
+        {['expense', 'income'].map((t) => (
           <Nav.Item key={t}>
-            <Nav.Link active={tab === t} onClick={() => setTab(t)} style={{ cursor: 'pointer' }}>
-              {t.charAt(0).toUpperCase() + t.slice(1)} ({categories.filter(c => c.type === t).length})
+            <Nav.Link
+              active={tab === t}
+              onClick={() => setTab(t)}
+              style={{ cursor: 'pointer' }}
+            >
+              {t.charAt(0).toUpperCase() + t.slice(1)}{' '}
+              <span style={{ color: 'var(--mz-muted)', fontSize: '0.8rem' }}>
+                ({categories.filter((c) => c.type === t).length})
+              </span>
             </Nav.Link>
           </Nav.Item>
         ))}
       </Nav>
-      <CategoryList categories={categories.filter(c => c.type === tab)}
-        onEdit={handleEdit} onDelete={setDeleting} />
+
+      {/* List */}
+      <CategoryList
+        categories={categories.filter((c) => c.type === tab)}
+        onEdit={handleEdit}
+        onDelete={setDeleting}
+      />
+
       <CategoryForm show={showForm} onHide={handleClose} category={editing} />
-      <ConfirmDialog show={!!deleting} onHide={() => setDeleting(null)}
+      <ConfirmDialog
+        show={!!deleting} onHide={() => setDeleting(null)}
         onConfirm={() => { deleteCategory(deleting.id); setDeleting(null) }}
-        title="Delete Category" message="Delete this category? Transactions using it will lose their category label." />
+        title="Delete Category"
+        message="Delete this category? Transactions using it will lose their category label."
+      />
     </Container>
   )
 }

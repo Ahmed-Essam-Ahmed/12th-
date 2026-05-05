@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap'
+import { Form, Button, Alert } from 'react-bootstrap'
 import { useAuth } from '../hooks/useAuth'
+import AppLogo from '../components/common/AppLogo'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -23,50 +24,49 @@ export default function RegisterPage() {
   }
 
   return (
-    <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-      <Row className="w-100 justify-content-center">
-        <Col xs={12} sm={8} md={5} lg={4}>
-          <div className="text-center mb-4">
-            <i className="bi bi-wallet2 text-primary" style={{ fontSize: 48 }} />
-            <h2 className="fw-bold mt-2">Mizanyti</h2>
-            <p className="text-muted">Create your free account</p>
-          </div>
-          <Card className="shadow-sm">
-            <Card.Body className="p-4">
-              {error && <Alert variant="danger" className="py-2">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Full Name</Form.Label>
-                  <Form.Control type="text" name="name" placeholder="Ahmed Essam"
-                    value={form.name} onChange={handle} required />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" name="email" placeholder="you@example.com"
-                    value={form.email} onChange={handle} required />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" name="password" placeholder="Min. 6 characters"
-                    value={form.password} onChange={handle} required />
-                </Form.Group>
-                <Form.Group className="mb-4">
-                  <Form.Label>Confirm Password</Form.Label>
-                  <Form.Control type="password" name="confirm" placeholder="Repeat password"
-                    value={form.confirm} onChange={handle} required />
-                </Form.Group>
-                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
-                  {loading ? 'Creating account...' : 'Create Account'}
-                </Button>
-              </Form>
-              <hr />
-              <div className="text-center small">
-                Already have an account? <Link to="/login">Sign in</Link>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="text-center mb-4">
+          <AppLogo size={56} />
+          <h3 className="mt-3 mb-1" style={{ fontWeight: 800 }}>Create account</h3>
+          <p style={{ color: 'var(--mz-muted)', fontSize: '0.9rem' }}>
+            Start tracking your finances today
+          </p>
+        </div>
+
+        {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
+
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Full Name</Form.Label>
+            <Form.Control type="text" name="name" placeholder="Ahmed Essam"
+              value={form.name} onChange={handle} required />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control type="email" name="email" placeholder="you@example.com"
+              value={form.email} onChange={handle} required />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" name="password" placeholder="Minimum 6 characters"
+              value={form.password} onChange={handle} required />
+          </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Confirm Password</Form.Label>
+            <Form.Control type="password" name="confirm" placeholder="Repeat your password"
+              value={form.confirm} onChange={handle} required />
+          </Form.Group>
+          <Button variant="primary" type="submit" className="w-100 py-2" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create Account'}
+          </Button>
+        </Form>
+
+        <p className="text-center mt-4 mb-0 small" style={{ color: 'var(--mz-muted)' }}>
+          Already have an account?{' '}
+          <Link to="/login" style={{ color: 'var(--mz-primary)', fontWeight: 600 }}>Sign in</Link>
+        </p>
+      </div>
+    </div>
   )
 }
