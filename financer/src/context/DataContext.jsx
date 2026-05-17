@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useCallback } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth }            from '../hooks/useAuth'
 import { transactionService } from '../services/transactionService'
 import { categoryService }    from '../services/categoryService'
 import { goalService }        from '../services/goalService'
@@ -13,45 +13,55 @@ export function DataProvider({ children }) {
   const [categories,   setCategories]   = useState([])
   const [goals,        setGoals]        = useState([])
   const [budgets,      setBudgets]      = useState([])
+  const [loading,      setLoading]      = useState(false)
 
-  const reload = useCallback(() => {
-    if (user) {
-      setTransactions(transactionService.getAll(user.id))
-      setCategories(categoryService.getAll(user.id))
-      setGoals(goalService.getAll(user.id))
-      setBudgets(budgetService.getAll(user.id))
-    } else {
+  const reload = useCallback(async () => {
+    if (!user) {
       setTransactions([]); setCategories([])
       setGoals([]);        setBudgets([])
+      return
+    }
+    setLoading(true)
+    try {
+      const [txs, cats, gls, bds] = await Promise.all([
+        transactionService.getAll(),
+        categoryService.getAll(),
+        goalService.getAll(),
+        budgetService.getAll(),
+      ])
+      setTransactions(txs)
+      setCategories(cats)
+      setGoals(gls)
+      setBudgets(bds)
+    } catch (err) {
+      console.error('Failed to load data:', err)
+    } finally {
+      setLoading(false)
     }
   }, [user])
 
   useEffect(() => { reload() }, [reload])
 
-  // Transactions
-  const addTransaction    = (d)    => { transactionService.add(user.id, d);       reload() }
-  const updateTransaction = (i, d) => { transactionService.update(user.id, i, d); reload() }
-  const deleteTransaction = (i)    => { transactionService.delete(user.id, i);    reload() }
+  const addTransaction    = async (d)    => { await transactionService.add(d);        await reload() }
+  const updateTransaction = async (i, d) => { await transactionService.update(i, d);  await reload() }
+  const deleteTransaction = async (i)    => { await transactionService.delete(i);     await reload() }
 
-  // Categories
-  const addCategory    = (d)    => { categoryService.add(user.id, d);       reload() }
-  const updateCategory = (i, d) => { categoryService.update(user.id, i, d); reload() }
-  const deleteCategory = (i)    => { categoryService.delete(user.id, i);    reload() }
+  const addCategory    = async (d)    => { await categoryService.add(d);       await reload() }
+  const updateCategory = async (i, d) => { await categoryService.update(i, d); await reload() }
+  const deleteCategory = async (i)    => { await categoryService.delete(i);    await reload() }
 
-  // Goals
-  const addGoal         = (d)    => { goalService.add(user.id, d);               reload() }
-  const updateGoal      = (i, d) => { goalService.update(user.id, i, d);         reload() }
-  const deleteGoal      = (i)    => { goalService.delete(user.id, i);            reload() }
-  const addContribution = (i, c) => { goalService.addContribution(user.id, i, c); reload() }
+  const addGoal         = async (d)    => { await goalService.add(d);                await reload() }
+  const updateGoal      = async (i, d) => { await goalService.update(i, d);          await reload() }
+  const deleteGoal      = async (i)    => { await goalService.delete(i);             await reload() }
+  const addContribution = async (i, c) => { await goalService.addContribution(i, c); await reload() }
 
-  // Budgets
-  const addBudget    = (d)    => { budgetService.add(user.id, d);       reload() }
-  const updateBudget = (i, d) => { budgetService.update(user.id, i, d); reload() }
-  const deleteBudget = (i)    => { budgetService.delete(user.id, i);    reload() }
+  const addBudget    = async (d)    => { await budgetService.add(d);       await reload() }
+  const updateBudget = async (i, d) => { await budgetService.update(i, d); await reload() }
+  const deleteBudget = async (i)    => { await budgetService.delete(i);    await reload() }
 
   return (
     <DataContext.Provider value={{
-      transactions, categories, goals, budgets,
+      transactions, categories, goals, budgets, loading,
       addTransaction, updateTransaction, deleteTransaction,
       addCategory,   updateCategory,   deleteCategory,
       addGoal,       updateGoal,       deleteGoal,    addContribution,

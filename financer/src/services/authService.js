@@ -1,34 +1,27 @@
-import { storage, KEYS } from './storage'
+import { api } from './api'
 
 export const authService = {
-  register: ({ name, email, password }) => {
-    const users = storage.get(KEYS.USERS) || []
-    if (users.find((u) => u.email === email)) {
-      throw new Error('This email is already registered.')
-    }
-    const newUser = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      password,
-      createdAt: new Date().toISOString(),
-    }
-    storage.set(KEYS.USERS, [...users, newUser])
-    const { password: _, ...safe } = newUser
-    storage.set(KEYS.CURRENT_USER, safe)
-    return safe
+  register: async ({ name, email, password }) => {
+    const data = await api.post('/auth/register', { name, email, password })
+    localStorage.setItem('mz_token', data.token)
+    localStorage.setItem('mz_user',  JSON.stringify(data.user))
+    return data.user
   },
 
-  login: (email, password) => {
-    const users = storage.get(KEYS.USERS) || []
-    const user = users.find((u) => u.email === email && u.password === password)
-    if (!user) throw new Error('Invalid email or password.')
-    const { password: _, ...safe } = user
-    storage.set(KEYS.CURRENT_USER, safe)
-    return safe
+  login: async (email, password) => {
+    const data = await api.post('/auth/login', { email, password })
+    localStorage.setItem('mz_token', data.token)
+    localStorage.setItem('mz_user',  JSON.stringify(data.user))
+    return data.user
   },
 
-  logout: () => storage.remove(KEYS.CURRENT_USER),
+  logout: () => {
+    localStorage.removeItem('mz_token')
+    localStorage.removeItem('mz_user')
+  },
 
-  getCurrentUser: () => storage.get(KEYS.CURRENT_USER),
+  getCurrentUser: () => {
+    const u = localStorage.getItem('mz_user')
+    return u ? JSON.parse(u) : null
+  },
 }

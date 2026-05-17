@@ -6,21 +6,26 @@ import AppLogo from '../components/common/AppLogo'
 
 export default function RegisterPage() {
   const { register } = useAuth()
-  const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
-  const [error, setError] = useState('')
+  const navigate     = useNavigate()
+  const [form,    setForm]    = useState({ name: '', email: '', password: '', confirm: '' })
+  const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); setError('')
     if (form.password !== form.confirm) return setError('Passwords do not match.')
-    if (form.password.length < 6) return setError('Password must be at least 6 characters.')
+    if (form.password.length < 6)       return setError('Password must be at least 6 characters.')
     setLoading(true)
-    try { register({ name: form.name, email: form.email, password: form.password }); navigate('/dashboard') }
-    catch (err) { setError(err.message) }
-    finally { setLoading(false) }
+    try {
+      await register({ name: form.name, email: form.email, password: form.password })
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -33,9 +38,7 @@ export default function RegisterPage() {
             Start tracking your finances today
           </p>
         </div>
-
         {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
-
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Full Name</Form.Label>
@@ -61,10 +64,11 @@ export default function RegisterPage() {
             {loading ? 'Creating account...' : 'Create Account'}
           </Button>
         </Form>
-
         <p className="text-center mt-4 mb-0 small" style={{ color: 'var(--mz-muted)' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--mz-primary)', fontWeight: 600 }}>Sign in</Link>
+          <Link to="/login" style={{ color: 'var(--mz-primary)', fontWeight: 600 }}>
+            Sign in
+          </Link>
         </p>
       </div>
     </div>

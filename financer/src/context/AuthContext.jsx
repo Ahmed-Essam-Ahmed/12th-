@@ -4,7 +4,7 @@ import { authService } from '../services/authService'
 export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
+  const [user,    setUser]    = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -12,14 +12,14 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const login = (email, password) => {
-    const u = authService.login(email, password)
+  const login = async (email, password) => {
+    const u = await authService.login(email, password)
     setUser(u)
     return u
   }
 
-  const register = (data) => {
-    const u = authService.register(data)
+  const register = async (data) => {
+    const u = await authService.register(data)
     setUser(u)
     return u
   }
