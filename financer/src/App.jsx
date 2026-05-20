@@ -14,12 +14,25 @@ import BudgetsPage          from './pages/BudgetsPage'
 import GoalsPage            from './pages/GoalsPage'
 import ProfilePage          from './pages/ProfilePage'
 import NotFoundPage         from './pages/NotFoundPage'
+import { useData }          from './hooks/useData'
 
 function Layout({ children }) {
+  const { loading } = useData()
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavigationBar />
-      <main className="flex-grow-1 page-wrapper">{children}</main>
+      <main className="flex-grow-1 page-wrapper">
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+            <div className="text-center">
+              <div className="spinner-border text-primary mb-3" role="status" style={{ width: 48, height: 48 }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p style={{ color: 'var(--mz-muted)' }}>Loading your data...</p>
+            </div>
+          </div>
+        ) : children}
+      </main>
       <Footer />
     </div>
   )

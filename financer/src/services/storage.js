@@ -1,21 +1,13 @@
-export const KEYS = {
-  USERS:        'mz_users',
-  CURRENT_USER: 'mz_current_user',
-  TRANSACTIONS: 'mz_transactions',
-  CATEGORIES:   'mz_categories',
-  GOALS:        'mz_goals',
-  BUDGETS:      'mz_budgets',
-}
-
 export const storage = {
-  get: (key) => {
-    try {
-      const item = localStorage.getItem(key)
-      return item ? JSON.parse(item) : null
-    } catch { return null }
+  getToken: () => localStorage.getItem('mz_token'),
+  getUser: () => {
+    const u = localStorage.getItem('mz_user')
+    return u ? JSON.parse(u) : null
   },
-  set: (key, value) => {
-    try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
+  setToken: (token) => localStorage.setItem('mz_token', token),
+  setUser: (user) => localStorage.setItem('mz_user', JSON.stringify(user)),
+  clear: () => {
+    localStorage.removeItem('mz_token')
+    localStorage.removeItem('mz_user')
   },
-  remove: (key) => localStorage.removeItem(key),
 }

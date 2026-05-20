@@ -1,13 +1,13 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+import { storage } from './storage'
 
-const token = () => localStorage.getItem('mz_token')
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 const req = async (method, path, body) => {
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      ...(token() ? { Authorization: `Bearer ${token()}` } : {}),
+      ...(storage.getToken() ? { Authorization: `Bearer ${storage.getToken()}` } : {}),
     },
     ...(body ? { body: JSON.stringify(body) } : {}),
   })
@@ -17,8 +17,8 @@ const req = async (method, path, body) => {
 }
 
 export const api = {
-  get:    (path)        => req('GET',    path),
-  post:   (path, body)  => req('POST',   path, body),
-  put:    (path, body)  => req('PUT',    path, body),
-  delete: (path)        => req('DELETE', path),
+  get:    (path)       => req('GET',    path),
+  post:   (path, body) => req('POST',   path, body),
+  put:    (path, body) => req('PUT',    path, body),
+  delete: (path)       => req('DELETE', path),
 }
