@@ -74,3 +74,17 @@ export const isGoalOnTrack = (goal) => {
   const expectedProgress = Math.min(((now - created) / totalMs) * 100, 100)
   return getGoalProgress(goal) >= expectedProgress
 }
+
+export const getCurrentMonthData = (transactions) => {
+  const now   = new Date()
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const monthTx = transactions.filter(t => t.date.startsWith(month))
+  return {
+    income:   monthTx.filter(t => t.type === 'income').reduce((s, t)  => s + t.amount, 0),
+    expenses: monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+    net:      monthTx.filter(t => t.type === 'income').reduce((s, t)  => s + t.amount, 0) -
+              monthTx.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+    count:    monthTx.length,
+    month,
+  }
+}

@@ -9,6 +9,7 @@ import IncomeVsExpenseChart  from '../components/dashboard/IncomeVsExpenseChart'
 import CategorySpendingChart from '../components/dashboard/CategorySpendingChart'
 import RecentTransactions    from '../components/dashboard/RecentTransactions'
 import BudgetAlerts          from '../components/budgets/BudgetAlerts'
+import MonthlySnapshot from '../components/dashboard/MonthlySnapshot'
 
 export default function DashboardPage() {
   const { user }         = useAuth()
@@ -19,6 +20,7 @@ export default function DashboardPage() {
       <h4 className="mb-4">Welcome back, {user.name} 👋</h4>
 
       {/* Budget alerts — only shows when a budget hits 80% */}
+      <MonthlySnapshot />
       <BudgetAlerts />
 
       {/* Row 1 — balance + stats */}
